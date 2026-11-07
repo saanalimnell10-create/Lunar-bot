@@ -4,13 +4,15 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
-# Ladataan ympäristömuuttujat .env-tiedostosta (tai Square Cloudin muuttujista)
+# Ladataan ympäristömuuttujat (mikäli käytetään .env-tiedostoa paikallisesti)
 load_dotenv()
-TOKEN = os.getenv("DISCORD_TOKEN")
 
-# Määritetään botin esiintymä ja tavallinen viestiprefiksi (tässä '::')
+# Haetaan token joko TOKEN- tai DISCORD_TOKEN-muuttujasta
+TOKEN = os.getenv("TOKEN") or os.getenv("DISCORD_TOKEN")
+
+# Määritetään botin esiintymä ja tarvittavat oikeudet (Intents)
 intents = discord.Intents.default()
-intents.message_content = True  # Vaaditaan tekstiviestien lukemiseen
+intents.message_content = True  # Vaaditaan tekstiviestien lukemiseen ja perinteisiin komentoihin
 
 bot = commands.Bot(command_prefix="::", intents=intents)
 
@@ -29,6 +31,10 @@ async def on_ready():
 
 # Funktio, joka lataa automaattisesti kaikki cogs-kansion python-tiedostot
 async def load_extensions():
+    if not os.path.exists("./cogs"):
+        print("Varoitus: 'cogs'-kansiota ei löytynyt!")
+        return
+
     for filename in os.listdir("./cogs"):
         if filename.endswith(".py"):
             extension_name = f"cogs.{filename[:-3]}"
@@ -39,6 +45,10 @@ async def load_extensions():
                 print(f"Virhe ladattaessa cogia {extension_name}: {e}")
 
 async def main():
+    if not TOKEN:
+        print("VIRHE: Discord-tokenia ei löytynyt! Tarkista Bot-Hosting.netin ympäristömuuttujat.")
+        return
+
     async with bot:
         await load_extensions()
         await bot.start(TOKEN)
