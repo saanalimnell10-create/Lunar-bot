@@ -2,10 +2,9 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 
-# Soft Pastel / Cotton Candy Pink color
-PASTEL_PINK = discord.Color.from_rgb(255, 183, 197)
+# Cotton Candy / Pastel Pink Hex color
+PASTEL_PINK = discord.Color(0xFFB7C5)
 
-# 1. Dropdown Select Menu
 class HelpSelect(discord.ui.Select):
     def __init__(self, bot):
         self.bot = bot
@@ -80,15 +79,11 @@ class HelpSelect(discord.ui.Select):
         embed.set_footer(text="Lunar Bot • Cotton Candy Theme")
         await interaction.response.edit_message(embed=embed, view=self.view)
 
-
-# 2. View Container
 class HelpView(discord.ui.View):
     def __init__(self, bot):
-        super().__init__(timeout=60)  # Dropdown expires after 60 seconds
+        super().__init__(timeout=60)
         self.add_item(HelpSelect(bot))
 
-
-# 3. Cog Definition
 class HelpCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
